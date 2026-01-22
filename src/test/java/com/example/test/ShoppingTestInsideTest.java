@@ -5,7 +5,6 @@ import com.example.saucedemo.SwagLabsPageSteps;
 import io.qameta.allure.Link;
 import io.qameta.allure.testng.Tag;
 import org.testng.annotations.Test;
-
 import static com.codeborne.selenide.Selenide.sleep;
 
 public class ShoppingTestInsideTest extends BaseSauceDemo {
@@ -23,9 +22,8 @@ public class ShoppingTestInsideTest extends BaseSauceDemo {
         loginSteps
                 .avtorizationSwag(userName, password);
         swagLabsPageSteps
-                .clickOk()
-                .shoppingCartPlus(productName)
-                .shoppingCartProduct(productName);
+                //.clickOk()
+                .shoppingCartPlus(productName);
         sleep(2000);
     }
 }

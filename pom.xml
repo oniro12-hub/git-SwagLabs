@@ -17,12 +17,11 @@
         <selenide.version>7.2.0</selenide.version>
         <testng.version>7.9.0</testng.version>
         <webdrivermanager.version>5.6.0</webdrivermanager.version>
-        <!-- ДОБАВЬТЕ ВЕРСИЮ ALLURE -->
         <allure.version>2.25.0</allure.version>
+        <aspectj.version>1.9.20.1</aspectj.version>
     </properties>
 
     <dependencies>
-        <!-- Selenide (включает Selenium) -->
         <dependency>
             <groupId>com.codeborne</groupId>
             <artifactId>selenide</artifactId>
@@ -37,47 +36,46 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- WebDriver Manager (автоматическая установка драйверов) -->
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
             <version>${webdrivermanager.version}</version>
         </dependency>
 
-        <!-- Логирование -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>2.0.9</version>
         </dependency>
 
-        <!-- Для работы с JSON/XML (опционально) -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.15.3</version>
         </dependency>
 
-        <!-- ВСТАВЬТЕ ЭТИ ЗАВИСИМОСТИ ALLURE -->
-        <!-- Allure TestNG адаптер -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-testng</artifactId>
             <version>${allure.version}</version>
         </dependency>
 
-        <!-- Дополнительные аннотации Allure (включая @Owner) -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-java-commons</artifactId>
             <version>${allure.version}</version>
         </dependency>
 
-        <!-- Для генерации отчетов (опционально, но рекомендуется) -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
-            <artifactId>allure-commandline</artifactId>
+            <artifactId>allure-selenide</artifactId>
             <version>${allure.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -92,11 +90,23 @@
                     <suiteXmlFiles>
                         <suiteXmlFile>testng.xml</suiteXmlFile>
                     </suiteXmlFiles>
-                    <!-- ДОБАВЬТЕ ЭТУ КОНФИГУРАЦИЮ ДЛЯ ALLURE -->
                     <argLine>
-<!--                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/1.9.20/aspectjweaver-1.9.20.jar"-->
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
                     </argLine>
+                    <systemProperties>
+                        <property>
+                            <name>allure.results.directory</name>
+                            <value>${project.build.directory}/allure-results</value>
+                        </property>
+                    </systemProperties>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.aspectj</groupId>
+                        <artifactId>aspectjweaver</artifactId>
+                        <version>${aspectj.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
 
             <plugin>
@@ -109,16 +119,40 @@
                 </configuration>
             </plugin>
 
-            <!-- ДОБАВЬТЕ ЭТОТ ПЛАГИН ДЛЯ GENERATION ALLURE ОТЧЕТОВ -->
             <plugin>
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-maven</artifactId>
                 <version>2.12.0</version>
                 <configuration>
                     <reportVersion>${allure.version}</reportVersion>
+                    <resultsDirectory>${project.build.directory}/allure-results</resultsDirectory>
+                    <reportDirectory>${project.build.directory}/allure-report</reportDirectory>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>allure</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.qameta.allure</groupId>
+                        <artifactId>allure-maven</artifactId>
+                        <executions>
+                            <execution>
+                                <id>report</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
