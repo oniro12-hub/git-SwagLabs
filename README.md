@@ -18,6 +18,7 @@ Git (для клонирования репозитория)
 
 bash
 git clone https://github.com/MrDmitryQA/git-SwagLabs.git
+
 cd git-SwagLabs
 
 - Соберите проект:
